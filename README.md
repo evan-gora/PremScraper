@@ -1,3 +1,5 @@
+# About the Project
+
 This project stemmed from my CSE385 Final Project. For this class, I had to use a database, either downloaded or created on my own, and make a GUI that allows a user to view the data.
 I knew that I wanted to use Premier Legaue data, but I could not find any good datasets, so I decided to create my own.
 
