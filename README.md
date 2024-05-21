@@ -7,4 +7,4 @@ This is an optimized version of the web scraper I wrote for that final project, 
 downloaded. I did it this way so that anyone looking for a good Premier League dataset for a project can simply download the CSV files and import them into a databse.
 
 This web scraper takes data from fbref.com and creates different CSV files for each team, each season, the season stats for each team in each season, and every match played in each 
-season. The data is taken from season 1992/1993 until the present season.
+season. The data is taken from season 1888/1889 until the present season.
