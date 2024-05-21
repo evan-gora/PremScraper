@@ -68,9 +68,9 @@ def getSeasonYrs(seasonURLs):
             
     return seasonYrs
 
-# Helper method for creating season stats. Used if the season contains passing data
-# (all seasons starting in 2017/2018).
-def createTables(seasonHTML, season):
+# Helper method for creating season stats. Used if the season is not missing any data.
+# (all seasons starting in 2017/2018)
+def createTable(seasonHTML, season):
     # Generate the regular season, shooting, passing, and misc data
     regSeason = pd.read_html(StringIO(seasonHTML), match = "Regular season Table")
     regSeason = regSeason[0]
@@ -103,6 +103,20 @@ def createTables(seasonHTML, season):
     miscStats = miscStats[['Performance']]
     miscStats.columns = miscStats.columns.droplevel(0)
     miscStats = miscStats[['CrdY', 'CrdR', 'Fls', 'PKcon', 'OG']]
+    
+    # Join all the tables
+    seasonStats = regSeason.join(squadShooting)
+    seasonStats = seasonStats.join(passingAtt)
+    seasonStats = seasonStats.join(passTypes)
+    seasonStats = seasonStats.join(miscStats)
+    
+    # Add the season years to the dataframe
+    seasonYrs = []
+    for i in range(0, len(seasonStats)):
+        seasonYrs.append(season)
+    seasonStats.insert(0, "Season", seasonYrs, True)
+    
+    return seasonStats
 
 # Go through each link and get the season stats for each team
 def getSeasonStats(seasonURLs):
@@ -114,11 +128,18 @@ def getSeasonStats(seasonURLs):
         # Get the season years
         if (link == 'https://fbref.com/en/comps/9/Premier-League-Stats'):
             season = CURRENT_SEASON
+            firstYr = 2023
         else:
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
             season = str(firstYr) + "/" + str(secondYr)
-    
+
+        # Create the stats for all season starting in 2017/2018
+        print("Getting Stats for " + season)
+        if (firstYr >= 2017):
+            seasonStats = createTable(seasonHTML, season)
+            return seasonStats
+        
 def main():
     # Get the season links
     print("Creating Season URLs")
@@ -129,6 +150,11 @@ def main():
     print("Getting Season Years")
     seasonYrs = getSeasonYrs(seasonURLs)
     print("Season Years Gathered")
+    
+    # Get the season stats
+    print("Getting Season Stats")
+    seasonStats = getSeasonStats(seasonURLs)
+    print("Season Stats Gathered")
         
 if (__name__ == "__main__"):
     main()
