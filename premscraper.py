@@ -118,8 +118,46 @@ def createTable(seasonHTML, season):
     
     return seasonStats
 
+# Helper method to create a table for seasons with no passing data and missing some other data
+# (1992/1993 - 2016/2017)
+def createTableNoPass(seasonHTML, season):
+    # Generate regular season, shooting, and misc data
+    regSeason = pd.read_html(StringIO(seasonHTML), match = "Regular season Table")
+    regSeason = regSeason[0]
+    squadShooting = pd.read_html(StringIO(seasonHTML), match = "Squad Shooting")
+    squadShooting = squadShooting[0]
+    miscStats = pd.read_html(StringIO(seasonHTML), match = "Squad Miscellaneous Stats")
+    miscStats = miscStats[0]
+    
+    # Clean the regular season data
+    regSeason = regSeason[['Squad', 'W', 'D', 'L', 'GF', 'GA', 'Pts']]
+    
+    # Clean the shooting data
+    squadShooting = squadShooting[['Standard']]
+    squadShooting.columns = squadShooting.columns.droplevel(0)
+    squadShooting = squadShooting[['SoT', 'PK']]
+    
+    # Clean the misc data
+    miscStats = miscStats[['Performance']]
+    miscStats.columns = miscStats.columns.droplevel(0)
+    miscStats = miscStats[['CrdY', 'CrdR', 'Fls']]
+    
+    # Join the tables
+    seasonStats = regSeason.join(squadShooting)
+    seasonStats = seasonStats.join(miscStats)
+    
+    # Add the season years to the dataframe
+    seasonYrs = []
+    for i in range(0, len(seasonStats)):
+        seasonYrs.append(season)
+    seasonStats.insert(0, "Season", seasonYrs, True)
+    
+    return seasonStats
+    
 # Go through each link and get the season stats for each team
 def getSeasonStats(seasonURLs):
+    # Create a dataframe to store all the season stats
+    allStats = pd.DataFrame()
     for link in seasonURLs:
         # Generate the HTML for each link
         seasonHTML = requests.get(link).text
@@ -134,11 +172,18 @@ def getSeasonStats(seasonURLs):
             secondYr = firstYr + 1
             season = str(firstYr) + "/" + str(secondYr)
 
-        # Create the stats for all season starting in 2017/2018
         print("Getting Stats for " + season)
+        # Create the stats for all season starting in 2017/2018
         if (firstYr >= 2017):
             seasonStats = createTable(seasonHTML, season)
-            return seasonStats
+        # Create season stats for seasons between 1992/1993 and 2016/2017
+        elif (firstYr >= 1992):
+            seasonStats = createTableNoPass(seasonHTML, season)
+            print(seasonStats)
+        else:
+            seasonStats = createRegSeasonTable(seasonHTML, season)
+        
+        allStats = allStats._append(seasonStats)
         
 def main():
     # Get the season links
