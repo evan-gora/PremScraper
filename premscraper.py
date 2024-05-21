@@ -153,6 +153,17 @@ def createTableNoPass(seasonHTML, season):
     seasonStats.insert(0, "Season", seasonYrs, True)
     
     return seasonStats
+
+# Helper method for getSeasonStats. Gets the season stats for seasons that only have
+# a regular season table (all seasons before 1992/1993)
+def createRegSeasonTable(seasonHTML, season):
+    # Generate the regular season dataframe
+    regSeason = pd.read_html(StringIO(seasonHTML), match = "Regular season Table")
+    regSeason = regSeason[0]
+    
+    # Clean the data
+    regSeason = regSeason[['Squad', 'W', 'D', 'L', 'GF', 'GA', 'Pts']]
+    
     
 # Go through each link and get the season stats for each team
 def getSeasonStats(seasonURLs):
@@ -179,11 +190,11 @@ def getSeasonStats(seasonURLs):
         # Create season stats for seasons between 1992/1993 and 2016/2017
         elif (firstYr >= 1992):
             seasonStats = createTableNoPass(seasonHTML, season)
-            print(seasonStats)
-        else:
-            seasonStats = createRegSeasonTable(seasonHTML, season)
+        #else:
+        #    seasonStats = createRegSeasonTable(seasonHTML, season)
         
         allStats = allStats._append(seasonStats)
+    return allStats
         
 def main():
     # Get the season links
@@ -199,6 +210,7 @@ def main():
     # Get the season stats
     print("Getting Season Stats")
     seasonStats = getSeasonStats(seasonURLs)
+    seasonStats.to_csv("seasonstats.csv")
     print("Season Stats Gathered")
         
 if (__name__ == "__main__"):
