@@ -164,6 +164,14 @@ def createRegSeasonTable(seasonHTML, season):
     # Clean the data
     regSeason = regSeason[['Squad', 'W', 'D', 'L', 'GF', 'GA', 'Pts']]
     
+    # Add the season years to the dataframe
+    seasonYrs = []
+    for i in range(0, len(regSeason)):
+        seasonYrs.append(season)
+    regSeason.insert(0, "Season", seasonYrs, True)
+    
+    return regSeason
+    
     
 # Go through each link and get the season stats for each team
 def getSeasonStats(seasonURLs):
@@ -187,11 +195,15 @@ def getSeasonStats(seasonURLs):
         # Create the stats for all season starting in 2017/2018
         if (firstYr >= 2017):
             seasonStats = createTable(seasonHTML, season)
+            time.sleep(1)
         # Create season stats for seasons between 1992/1993 and 2016/2017
         elif (firstYr >= 1992):
             seasonStats = createTableNoPass(seasonHTML, season)
-        #else:
-        #    seasonStats = createRegSeasonTable(seasonHTML, season)
+            time.sleep(1)
+        # Create season stats for the rest of the seasons
+        else:
+            seasonStats = createRegSeasonTable(seasonHTML, season)
+            time.sleep(1)
         
         allStats = allStats._append(seasonStats)
     return allStats
