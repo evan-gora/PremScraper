@@ -10,6 +10,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import time
 import pandas as pd
+import numpy as np
 from pip._vendor import requests
 
 # Define the current teams and the current season
@@ -56,17 +57,19 @@ def createSeasonLinks():
 
 # Go through each link in the seasonURLs and extract the year from them. Add the year to its own array
 def getSeasonYrs(seasonURLs):
-    seasonYrs = []
+    seasonYrs = np.array([])
     for link in seasonURLs:
         # The current season link does not have the year
         if (link == 'https://fbref.com/en/comps/9/Premier-League-Stats'):
-            seasonYrs.append(CURRENT_SEASON)
+            seasonYrs = np.append(seasonYrs, CURRENT_SEASON)
         else:
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
-            seasonYrs.append(str(firstYr) + "/" + str(secondYr))
+            seasonYrs = np.append(seasonYrs, str(firstYr) + "/" + str(secondYr))
             
-    return seasonYrs
+    # Convert to a pandas dataframe and return
+    data = pd.DataFrame(seasonYrs)
+    return data
 
 # Helper method for creating season stats. Used if the season is not missing any data.
 # (all seasons starting in 2017/2018)
@@ -180,7 +183,6 @@ def getSeasonStats(seasonURLs):
     for link in seasonURLs:
         # Generate the HTML for each link
         seasonHTML = requests.get(link).text
-        soup = BeautifulSoup(seasonHTML, "html.parser")
         
         # Get the season years
         if (link == 'https://fbref.com/en/comps/9/Premier-League-Stats'):
@@ -207,7 +209,21 @@ def getSeasonStats(seasonURLs):
         
         allStats = allStats._append(seasonStats)
     return allStats
-        
+
+# Stores all the unique teams in an array before converting to a pandas dataframe.
+def getUniqueTeams(seasonStats):
+    # Get all unique teams from the season stats
+    uniqueTeams = np.array([])
+    teams = seasonStats['Squad'].values
+    for team in teams:
+        if (team not in uniqueTeams):
+            print(team)
+            uniqueTeams = np.append(uniqueTeams, team)
+    
+    # Convert the array to a pandas dataframe and return the dataframe
+    data = pd.DataFrame(uniqueTeams)
+    return data
+            
 def main():
     # Get the season links
     print("Creating Season URLs")
@@ -225,6 +241,12 @@ def main():
     seasonStats = getSeasonStats(seasonURLs)
     seasonStats.to_csv("seasonstats.csv")
     print("Season Stats Gathered")
+    
+    # Get list of unique teams
+    print("Getting list of unique teams")
+    teams = getUniqueTeams(seasonStats)
+    teams.to_csv("teams.csv")
+    print("All Unique Teams Found")
         
 if (__name__ == "__main__"):
     main()
