@@ -217,6 +217,7 @@ def main():
     # Get the season years
     print("Getting Season Years")
     seasonYrs = getSeasonYrs(seasonURLs)
+    seasonYrs.to_csv("seasons.csv")
     print("Season Years Gathered")
     
     # Get the season stats
