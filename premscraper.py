@@ -197,15 +197,15 @@ def getSeasonStats(seasonURLs):
         # Create the stats for all season starting in 2017/2018
         if (firstYr >= 2017):
             seasonStats = createStatsTable(seasonHTML, season)
-            time.sleep(1)
+            time.sleep(2)
         # Create season stats for seasons between 1992/1993 and 2016/2017
         elif (firstYr >= 1992):
             seasonStats = createTableNoPass(seasonHTML, season)
-            time.sleep(1)
+            time.sleep(2)
         # Create season stats for the rest of the seasons
         else:
             seasonStats = createRegSeasonTable(seasonHTML, season)
-            time.sleep(1)
+            time.sleep(2)
         
         allStats = allStats._append(seasonStats)
     return allStats
@@ -226,6 +226,8 @@ def getUniqueTeams(seasonStats):
 
 # Gets all the links to the matches from each season
 def createMatchLinks(seasonURLs):
+    # Create an array to store the links
+    matchURLs = []
     # Iterate through each season link
     for season in seasonURLs:
         # Get the HTML for the season
@@ -236,13 +238,10 @@ def createMatchLinks(seasonURLs):
         matches = [link.get("href") for link in matches]
         matches = [link for link in matches if type(link) == str]
         matches = [link for link in matches if '/en/comps/9/' in link and '/schedule/' in link]
-        # Add the fbref.com tag to the front of each link
-        matchURLs = []
-        for link in matches:
-            link = "https://fbref.com" + link
-            # Check for duplicates
-            if (link not in matchURLs):
-                matchURLs.append(link)
+        # Add the fbref.com tag to the front of the link
+        matchURL = "https://fbref.com" + matches[0]
+        # Add link to array
+        matchURLs.append(matchURL)
                 
     return matchURLs
         
@@ -332,18 +331,15 @@ def getMatchData(matchURLs):
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
             season = str(firstYr) + "/" + str(secondYr)
-        
         # Get the stats for the season
-        print("Getting stats for " + season)
+        print("Getting matches from " + season)
         # Create the stats for all season starting in 2017/2018
         if (firstYr >= 2017):
             matches = createMatchTable(matchHTML, season)
-            time.sleep(1)
         # Create season stats for the rest of the seasons
         else:
             matches = createMatchesMissing(matchHTML, season)
-            time.sleep(1)
-
+            
         allMatches = allMatches._append(matches)
     return allMatches
 
