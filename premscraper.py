@@ -62,10 +62,12 @@ def getSeasonYrs(seasonURLs):
         # The current season link does not have the year
         if (link == 'https://fbref.com/en/comps/9/Premier-League-Stats'):
             seasonYrs = np.append(seasonYrs, CURRENT_SEASON)
+            time.sleep(2)
         else:
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
             seasonYrs = np.append(seasonYrs, str(firstYr) + "/" + str(secondYr))
+            time.sleep(2)
             
     # Convert to a pandas dataframe and return
     data = pd.DataFrame(seasonYrs)
@@ -242,6 +244,8 @@ def createMatchLinks(seasonURLs):
         matchURL = "https://fbref.com" + matches[0]
         # Add link to array
         matchURLs.append(matchURL)
+        # Avoid being getting rate limited
+        time.sleep(2)
                 
     return matchURLs
         
@@ -341,6 +345,7 @@ def getMatchData(matchURLs):
             matches = createMatchesMissing(matchHTML, season)
             
         allMatches = allMatches._append(matches)
+        time.sleep(2)
     return allMatches
 
 def main():
@@ -370,7 +375,7 @@ def main():
     # Get the match links
     print("Creating Match URLs")
     matchURLs = createMatchLinks(seasonURLs)
-    print(matchURLs)
+    #print(matchURLs)
     print("Match URLs Created")
     
     # Get the match data
