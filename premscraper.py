@@ -1,7 +1,7 @@
 # Author - Evan Gora
 #
-# A web scraper that scrapes various different Premier League data from fbref.com
-# and adds it to different CSV files. The dataset itself is downloadable from kaggle
+# A web scraper that scrapes various different Premier League data and adds it to 
+# different CSV files. The dataset itself is downloadable from kaggle
 # at: ADD LINK HERE. The data includes different stats for each team in each season 
 # as well as match results from each season since the 1888/1889 season.
 
@@ -62,12 +62,10 @@ def getSeasonYrs(seasonURLs):
         # The current season link does not have the year
         if (link == 'https://fbref.com/en/comps/9/Premier-League-Stats'):
             seasonYrs = np.append(seasonYrs, CURRENT_SEASON)
-            time.sleep(2)
         else:
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
             seasonYrs = np.append(seasonYrs, str(firstYr) + "/" + str(secondYr))
-            time.sleep(2)
             
     # Convert to a pandas dataframe and return
     data = pd.DataFrame(seasonYrs)
