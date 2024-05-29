@@ -2,7 +2,8 @@
 #
 # A web scraper that scrapes various different Premier League data and adds it to 
 # different CSV files. The dataset itself is downloadable from kaggle
-# at: ADD LINK HERE. The data includes different stats for each team in each season 
+# at: https://www.kaggle.com/datasets/evangora/premier-league-data/data. 
+# The data includes different stats for each team in each season 
 # as well as match results from each season since the 1888/1889 season.
 
 from io import StringIO
