@@ -20,7 +20,7 @@ CURRENT_TEAMS = ["Manchester City", "Arsenal", "Liverpool", "Aston Villa", "Tott
                 "Wolverhampton Wanderers", "Fulham", "Bournemouth", "Crystal Palace", "Brentford", "Everton", 
                 "Nottingham Forest", "Luton Town", "Burnley", "Sheffield United"]
 
-CURRENT_SEASON = "2023/2024"
+CURRENT_SEASON = "2023-2024"
 
 # Get the name of a team from a link and an index
 def getTeamName(link, indx):
@@ -66,7 +66,7 @@ def getSeasonYrs(seasonURLs):
         else:
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
-            seasonYrs = np.append(seasonYrs, str(firstYr) + "/" + str(secondYr))
+            seasonYrs = np.append(seasonYrs, str(firstYr) + "-" + str(secondYr))
             
     # Convert to a pandas dataframe and return
     data = pd.DataFrame(seasonYrs)
@@ -192,7 +192,7 @@ def getSeasonStats(seasonURLs):
         else:
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
-            season = str(firstYr) + "/" + str(secondYr)
+            season = str(firstYr) + "-" + str(secondYr)
 
         print("Getting Stats for " + season)
         # Create the stats for all season starting in 2017/2018
@@ -243,8 +243,9 @@ def createMatchLinks(seasonURLs):
         matchURL = "https://fbref.com" + matches[0]
         # Add link to array
         matchURLs.append(matchURL)
+        print(matchURL)
         # Avoid being getting rate limited
-        time.sleep(2)
+        time.sleep(5)
                 
     return matchURLs
         
@@ -333,7 +334,7 @@ def getMatchData(matchURLs):
         else:
             firstYr = getSeasonYear(link, 29, 33)
             secondYr = firstYr + 1
-            season = str(firstYr) + "/" + str(secondYr)
+            season = str(firstYr) + "-" + str(secondYr)
         # Get the stats for the season
         print("Getting matches from " + season)
         # Create the stats for all season starting in 2017/2018
@@ -344,7 +345,7 @@ def getMatchData(matchURLs):
             matches = createMatchesMissing(matchHTML, season)
             
         allMatches = allMatches._append(matches)
-        time.sleep(2)
+        time.sleep(5)
     return allMatches
 
 def main():
